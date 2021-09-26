@@ -3,66 +3,64 @@ from tkinter.ttk import *
 from configparser import *
 import tkinter.font as tkfont
 
-def SaveConfigs():
-    file1=open(fGameIniPath, 'w')
-    file2=open(fGameUserSettingsIniPath, 'w')
-    file1.write(gameIni.get("1.0", END))
-    file2.write(gameUserSettingsIni.get("1.0", END))
-    file1.close()
-    file2.close()
+class MainWindow():
+    def SaveConfigs(self):
+        self._file1 = open(self._fGameIniPath, 'w')
+        self._file2 = open(self._fGameUserSettingsIniPath, 'w')
+        self._file1.write(self._gameIni.get("1.0", END))
+        self._file2.write(self._gameUserSettingsIni.get("1.0", END))
+        self._file1.close()
+        self._file2.close()
 
-config = ConfigParser()
-config.read('conf.ini')
-fontSize=config['main']['FontSize']
+    def __init__(self):
+        self._config = ConfigParser()
+        self._config.read('conf.ini')
+        self._fontSize = self._config['main']['FontSize']
 
-mainWindow = Tk()
+        self.mainWindow = Tk()
 
-default_font = tkfont.nametofont("TkDefaultFont")
-default_font.configure(size=fontSize)
+        self._default_font = tkfont.nametofont("TkDefaultFont")
+        self._default_font.configure(size=self._fontSize)
 
-default_font2 = tkfont.nametofont("TkFixedFont")
-default_font2.configure(size=fontSize)
+        self._default_font2 = tkfont.nametofont("TkFixedFont")
+        self._default_font2.configure(size=self._fontSize)
 
-#mainWindow.option_add("*Font", default_font)
+        # mainWindow.option_add("*Font", default_font)
 
-mainWindow.title("ArkControlClient", )
-mainWindow.geometry("1024x768")
-#mainWindow.option_add("*Font", ('Verdana', 30))
+        self.mainWindow.title("ArkControlClient", )
+        self.mainWindow.geometry("1024x768")
+        # mainWindow.option_add("*Font", ('Verdana', 30))
 
+        self._menubar = Menu(self.mainWindow)
+        self.mainWindow.config(menu=self._menubar)
+        self._menubar.add_command(label='SAVE', command=self.SaveConfigs)
 
+        self._nb = Notebook(self.mainWindow)
+        self._gameIni = Text(self._nb)
+        self._gameUserSettingsIni = Text(self._nb)
+        self._nb.add(self._gameIni, text='Game.ini')
+        self._nb.add(self._gameUserSettingsIni, text='GameUserSettings.ini')
+        self._nb.pack(fill='both', expand='yes')
 
+        self._fGameIniPath = self._config['main']['GameUserSettingsIniPath'] + '\\' + 'Game.ini'
+        self._fGameUserSettingsIniPath = self._config['main']['GameUserSettingsIniPath'] + '\\' + 'GameUserSettings.ini'
 
+        self._fGameIni = open(self._fGameIniPath)
+        self._fGameUserSettingsIni = open(self._fGameUserSettingsIniPath)
 
+        self._gameIni.insert(1.0, self._fGameIni.read().strip())
+        self._gameUserSettingsIni.insert(1.0, self._fGameUserSettingsIni.read().strip())
 
+        self._fGameIni.close()
+        self._fGameUserSettingsIni.close()
 
+        self._sbGameIni = Scrollbar(self._gameIni, command=self._gameIni.yview)
+        self._sbGameUserSettingsIni = Scrollbar(self._gameUserSettingsIni, command=self._gameUserSettingsIni.yview)
+        self._sbGameIni.pack(side=RIGHT, fill=Y)
+        self._sbGameUserSettingsIni.pack(side=RIGHT, fill=Y)
 
-menubar=Menu(mainWindow)
-mainWindow.config(menu=menubar)
-menubar.add_command(label='SAVE', command=SaveConfigs)
+window=MainWindow()
 
-nb = Notebook(mainWindow)
-gameIni = Text(nb)
-gameUserSettingsIni = Text(nb)
-nb.add(gameIni, text='Game.ini')
-nb.add(gameUserSettingsIni, text='GameUserSettings.ini')
-nb.pack(fill='both', expand='yes')
+window.mainWindow.mainloop()
 
-fGameIniPath=config['main']['GameUserSettingsIniPath'] + '\\' + 'Game.ini'
-fGameUserSettingsIniPath=config['main']['GameUserSettingsIniPath'] + '\\' + 'GameUserSettings.ini'
-
-fGameIni = open(fGameIniPath)
-fGameUserSettingsIni = open(fGameUserSettingsIniPath)
-
-gameIni.insert(1.0, fGameIni.read().strip())
-gameUserSettingsIni.insert(1.0, fGameUserSettingsIni.read().strip())
-
-fGameIni.close()
-fGameUserSettingsIni.close()
-
-sbGameIni=Scrollbar(gameIni, command=gameIni.yview)
-sbGameUserSettingsIni=Scrollbar(gameUserSettingsIni, command=gameUserSettingsIni.yview)
-sbGameIni.pack(side=RIGHT, fill=Y)
-sbGameUserSettingsIni.pack(side=RIGHT, fill=Y)
-
-mainWindow.mainloop()
 
